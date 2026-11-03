@@ -1,24 +1,23 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/static/office/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AgentsOffice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f3d48a" />
+    <meta name="description" content="辛蒂的 AI 同事辦公室：指派任務、看每日進度、使用 25 分鐘番茄鐘。" />
+    <title>辛蒂的 AI 同事辦公室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet" />
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; }
+      html, body, #cindy-root { margin: 0; min-height: 100%; }
+      body { background: #c8ecb0; }
     </style>
-    <script type="module" crossorigin src="/static/office/assets/index-D9xJs4xl.js"></script>
-    <link rel="modulepreload" crossorigin href="/static/office/assets/phaser-DFK5Ua9d.js">
+    <script type="module" crossorigin src="./assets/main-CJSS3roR.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/client-D6Ikx3I_.js">
+    <link rel="stylesheet" crossorigin href="./assets/main-DugkR9wd.css">
   </head>
   <body>
-    <!-- Phaser Canvas 渲染目标 -->
-    <div id="game-container" style="position: absolute; top: 0; left: 0;"></div>
-
-    <!-- React UI 浮层，覆盖在 Canvas 之上 -->
-    <div id="ui-overlay" style="position: absolute; top: 0; left: 0;
-         width: 100%; height: 100%; pointer-events: none; z-index: 10;"></div>
-
+    <div id="cindy-root"></div>
   </body>
 </html>

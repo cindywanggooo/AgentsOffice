@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+from app.office.cindy.agents import CINDY_BUILTIN_AGENTS
+
 
 # ============================================================
 # 调度员定义（特殊角色，不参与任务分配）
@@ -94,6 +96,9 @@ BUILTIN_AGENTS: Dict[str, Dict[str, Any]] = {
 ## 回复风格
 - 用简单的中文，不使用技术术语
 - 用表格展示数据预览和方案
-- 每个阶段结束时明确询问用户确认""",
+        - 每个阶段结束时明确询问用户确认""",
     },
 }
+
+# 辛蒂辦公室的五位同事。像素辦公室也看得到他們；真正執行仍走 run_agent。
+BUILTIN_AGENTS.update(CINDY_BUILTIN_AGENTS)

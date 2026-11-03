@@ -92,6 +92,16 @@ export const zhCN: Record<string, string> = {
   'builtin.assistant.role': '通用工作助理',
   'builtin.data_engineer': '数据工程师',
   'builtin.data_engineer.role': '数据管理与上传',
+  'builtin.amy': 'Amy',
+  'builtin.amy.role': '信件回复、自媒体经纪人',
+  'builtin.lily': 'Lily',
+  'builtin.lily.role': '研究最新 AI 技术与应用、文章写手',
+  'builtin.ken': 'Ken',
+  'builtin.ken.role': '工程与安全工具人',
+  'builtin.ivy': 'Ivy',
+  'builtin.ivy.role': '美编设计师',
+  'builtin.maggie': 'Maggie',
+  'builtin.maggie.role': '项目经理',
 
   // ========== 通用 ==========
   'common.close': '关闭',

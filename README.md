@@ -5,6 +5,90 @@
   <a href="README_ja.md">日本語</a>
 </p>
 
+## 辛蒂的 AI 同事辦公室
+
+家具圖來自 [Kenney Furniture Kit](https://kenney.nl/assets/furniture-kit)（CC0），縮小成像素比例後放進房間。角色、辦公室貓、霓虹燈、白板和機櫃是這個專案自己畫的像素圖。
+
+深色開放式辦公室：Cindy 的總經理座位和 Maggie 的主管座位在同一間，用地毯和家具分區。任務預設交給 Maggie 分派；同事完成後會走到主管座位，再由 Maggie 送到「給總經理的回報」。人物走動在沒接上模型時標成模擬。狀態（待命 / 進行中 / 完成）、每日紀錄和 25:00 番茄鐘都還在。手機上場景會縮小，側欄變成底部頁籤。原本的像素辦公室在 `pixel.html`。
+
+![桌面版](docs/cindy-office-desktop.png)
+
+![手機版](docs/cindy-office-mobile.png)
+
+### 本地執行
+
+需要 Node.js 22 與 Python 3.11+。沒有 Docker、也沒有 API Key 就能用。
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+另一個終端機：
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+打開 <http://localhost:5174/static/office/>。後端有開時，任務寫進 `data/cindy_office.json`，重新整理還在。
+
+只想先看畫面、不啟 Python 也可以。這樣任務存在這台瀏覽器：
+
+```bash
+cd frontend && npm install && npm run build
+npx vite preview --host 127.0.0.1 --port 4173
+```
+
+打開 <http://127.0.0.1:4173/>。手機請用同一個網址，或把視窗縮到約 360px。每位同事的房間都有輸入框；「跟同事說話」會打開對話。
+
+### 任務有沒有送到真正的 Agent
+
+**預設沒有。** 靜態網站只把任務和對話存在訪客自己的瀏覽器。本機若只開了後端、沒填模型，任務寫進 JSON 檔，並回一段固定的繁體中文確認，狀態維持待命，要自己改成進行中或完成。
+
+要接到這個倉庫原本的 Agent 執行器（`app.services.agents.runner.run_agent`），需要同時：
+
+1. 跑 FastAPI，不能只用 GitHub Pages 或 Vercel 的靜態檔。
+2. 在 `.env` 設定 `DEFAULT_LLM_MODEL`（例如 `gemini/gemini-2.5-flash`）。
+3. 設定對應的一把金鑰：`GEMINI_API_KEY`、`OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`DEEPSEEK_API_KEY` 或 `DASHSCOPE_API_KEY`。
+4. 前端必須打得到同一個網域的 `/api/v1/office/cindy`。`npm run dev` 會把 `/api` 代理到 8001。靜態網站預設連不到後端，所以不會送出。
+
+接上之後，指派或聊天會用該同事的系統提示詞呼叫模型，回覆出現在對話裡，任務改成完成。若資料庫有開、而且這位同事在原本的設定面板有自己的模型與金鑰，會優先用那一組。
+
+接點：
+
+- 後端：`app/office/cindy/adapter.py` 的 `AgentWorkAdapter`。沒有模型時用 `LocalEchoAdapter`，有模型時用 `OfficeRuntimeAdapter`。
+- 前端：`frontend/src/cindy/backend.ts` 的 `OfficeBackend`。靜態網站用 `BrowserOfficeBackend`，偵測到 API 才用 `ServerOfficeBackend`。
+
+### 部署到 Vercel 或 GitHub Pages
+
+這是靜態網站，上面沒有登入，也沒有模型。不要在 Vercel 環境變數放 API Key。
+
+**Vercel**
+
+1. 把倉庫推上 GitHub，到 [vercel.com](https://vercel.com) 用 GitHub 登入後 Import。
+2. Root Directory 留空（不要設成 `frontend`）。
+3. 倉庫裡的 `vercel.json` 已寫好建置指令與輸出目錄 `app/static/office`。Framework Preset 選 Other。
+4. 不要新增任何 API Key。按 Deploy。
+
+**GitHub Pages**
+
+1. 倉庫已有 `.github/workflows/pages.yml`。
+2. GitHub → Settings → Pages → Build and deployment → Source 選 **GitHub Actions**。
+3. 推上 `main` 後，Actions 會部署。網址會是 `https://<帳號>.github.io/AgentsOffice/`。
+4. 私人倉庫在免費方案可能無法使用 Pages，需要改成公開。
+
+### 公開網站的隱私
+
+- 預設沒有帳號。每個人的任務只在自己的瀏覽器，換電腦或清除網站資料就沒了，別人也看不到。
+- 請不要在任務或對話輸入密碼、金鑰、身分證、客戶資料或未公開的內容。
+- 不要把 LLM API Key 打進前端。靜態檔任何人都能看。
+- 這個 API **沒有登入**。不要把 FastAPI 直接公開到網路上：任何人都能讀寫任務；若伺服器上有模型金鑰，別人還能消耗額度。若要公開後端，請先加上登入（反向代理、Vercel 密碼保護，或只放在私人網路）。`CINDY_CORS_ORIGINS` 預設關閉，不要設成 `*`。
+
+---
+
 <p align="center">
   <img src="docs/demo.gif" width="800" alt="AgentsOffice Demo" />
 </p>

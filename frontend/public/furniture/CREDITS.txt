@@ -1,0 +1,5 @@
+Furniture sprites are from Kenney's Furniture Kit, CC0.
+https://kenney.nl/assets/furniture-kit
+
+They are scaled down with nearest-neighbor sampling so they sit with the pixel characters.
+Characters, the office cat, the neon sign, the whiteboard and the server racks are original pixel art for this office.

@@ -20,8 +20,13 @@ const SPRITE_MAP: Record<string, string> = {
   dispatcher: 'char_01',
   assistant: 'char_02',
   data_engineer: 'char_04',
+  amy: 'char_05',
+  lily: 'char_06',
+  ken: 'char_07',
+  ivy: 'char_08',
+  maggie: 'char_09',
 };
-let nextSpriteIndex = 5; // 用户自定义 agent 从 char_05 开始
+let nextSpriteIndex = 10; // char_05–char_09 留給辛蒂的五位同事
 
 /** 最大可用精灵数（素材包提供 20 个预制角色） */
 const MAX_SPRITES = 20;
@@ -48,6 +53,11 @@ function getFallbackAgents(): AgentRegistryEntry[] {
     { slug: 'dispatcher', displayName: t('builtin.dispatcher'), role: t('builtin.dispatcher.role'), color: '#ff6b6b', roomId: 'manager', phaserAgentId: 'agt_dispatcher', isDispatcher: true },
     { slug: 'assistant', displayName: t('builtin.assistant'), role: t('builtin.assistant.role'), color: '#4ade80', roomId: 'workspace', phaserAgentId: 'agt_assistant', isDispatcher: false },
     { slug: 'data_engineer', displayName: t('builtin.data_engineer'), role: t('builtin.data_engineer.role'), color: '#a78bfa', roomId: 'datacenter', phaserAgentId: 'agt_data_eng', isDispatcher: false },
+    { slug: 'amy', displayName: t('builtin.amy'), role: t('builtin.amy.role'), color: '#e45c97', roomId: 'showroom', phaserAgentId: 'agt_amy', isDispatcher: false },
+    { slug: 'lily', displayName: t('builtin.lily'), role: t('builtin.lily.role'), color: '#7c5cbf', roomId: 'workspace', phaserAgentId: 'agt_lily', isDispatcher: false },
+    { slug: 'ken', displayName: t('builtin.ken'), role: t('builtin.ken.role'), color: '#2f6f9f', roomId: 'datacenter', phaserAgentId: 'agt_ken', isDispatcher: false },
+    { slug: 'ivy', displayName: t('builtin.ivy'), role: t('builtin.ivy.role'), color: '#e08a2c', roomId: 'meeting', phaserAgentId: 'agt_ivy', isDispatcher: false },
+    { slug: 'maggie', displayName: t('builtin.maggie'), role: t('builtin.maggie.role'), color: '#2f8f4e', roomId: 'manager', phaserAgentId: 'agt_maggie', isDispatcher: false },
   ];
 }
 
