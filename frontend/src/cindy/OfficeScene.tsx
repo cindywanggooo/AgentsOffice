@@ -5,17 +5,17 @@ import type { Presence } from "./sim";
 import type { OfficeTask } from "./types";
 
 const SPOTS: Record<string, { x: number; y: number }> = {
-  cindy: { x: 17, y: 32 },
-  maggieOffice: { x: 50, y: 32 },
-  kitchen: { x: 83, y: 32 },
-  whiteboard: { x: 50, y: 46 },
-  amy: { x: 17, y: 58 },
-  lily: { x: 50, y: 58 },
-  ken: { x: 83, y: 58 },
-  ivy: { x: 17, y: 84 },
-  lounge: { x: 50, y: 84 },
-  meet: { x: 50, y: 70 },
-  servers: { x: 83, y: 84 },
+  cindy: { x: 16, y: 38 },
+  maggieOffice: { x: 38, y: 36 },
+  kitchen: { x: 86, y: 36 },
+  whiteboard: { x: 62, y: 42 },
+  amy: { x: 14, y: 68 },
+  lily: { x: 36, y: 72 },
+  ken: { x: 58, y: 70 },
+  ivy: { x: 80, y: 66 },
+  lounge: { x: 30, y: 88 },
+  meet: { x: 48, y: 84 },
+  servers: { x: 86, y: 86 },
 };
 
 const PEOPLE = ["cindy", "maggie", "amy", "lily", "ken", "ivy"];
@@ -79,65 +79,37 @@ export function OfficeScene({ tasks, day, walks, bubbles, selected, onSelect, to
         <div className="skyline" />
         <img className="neon" alt="" src={asset("sprites/neon.png")} />
       </div>
-      <div className="rooms" aria-hidden="true">
-        <section className="cell gm carpet-brown">
-          <span className="plate">總經理室</span>
-          <Prop file="desk.png" />
-          <Prop file="chair.png" />
-          <Prop file="lamp.png" />
-        </section>
-        <section className="cell lead carpet-green">
-          <span className="plate">主管室</span>
-          <Prop file="desk.png" />
-          <Prop file="bookcase.png" />
-          <Prop file="plant.png" />
-        </section>
-        <section className="cell kitchen carpet-navy">
-          <span className="plate">茶水間</span>
-          <Prop file="cabinet.png" />
-          <Prop file="coffee.png" />
-          <img className="prop tiny" alt="" src={asset("sprites/cooler.png")} />
-        </section>
-        <section className="cell amy carpet-purple">
-          <span className="plate">Amy</span>
-          <Prop file="rug.png" />
-          <Prop file="desk.png" />
-          <Prop file="monitor.png" />
-          <Prop file="plant-small.png" />
-        </section>
-        <section className="cell lily carpet-teal">
-          <span className="plate">Lily</span>
-          <Prop file="rug.png" />
-          <Prop file="desk.png" />
-          <Prop file="books.png" />
-          <Prop file="lamp.png" />
-        </section>
-        <section className="cell ken carpet-maroon">
-          <span className="plate">Ken</span>
-          <Prop file="rug.png" />
-          <Prop file="desk.png" />
-          <Prop file="monitor.png" />
-          <Prop file="side-table.png" />
-        </section>
-        <section className="cell ivy carpet-amber">
-          <span className="plate">Ivy</span>
-          <Prop file="rug.png" />
-          <Prop file="desk.png" />
-          <Prop file="lounge-chair.png" />
-          <Prop file="plant.png" />
-        </section>
-        <section className="cell lounge carpet-olive">
-          <span className="plate">休息區</span>
-          <Prop file="sofa.png" />
-          <Prop file="coffee-table.png" />
-          <img className="prop board" alt="" src={asset("sprites/board.png")} />
-        </section>
-        <section className="cell servers carpet-ink">
-          <span className="plate">機房</span>
-          <img className="prop" alt="" src={asset("sprites/rack.png")} />
-          <img className="prop" alt="" src={asset("sprites/rack.png")} />
-          <Prop file="plant-small.png" />
-        </section>
+      <div className="floor" aria-hidden="true">
+        <i className="zone zone-gm" />
+        <i className="zone zone-lead" />
+        <i className="zone zone-amy" />
+        <i className="zone zone-lily" />
+        <i className="zone zone-ken" />
+        <i className="zone zone-ivy" />
+        <i className="zone zone-lounge" />
+        <span className="plate plate-gm">總經理座位</span>
+        <span className="plate plate-lead">主管座位</span>
+        <Prop file="desk.png" className="big at-gm" />
+        <Prop file="chair.png" className="at-gm-chair" />
+        <Prop file="lamp.png" className="at-gm-lamp" />
+        <Prop file="desk.png" className="big at-lead" />
+        <Prop file="bookcase.png" className="at-lead-books" />
+        <Prop file="desk.png" className="at-amy" />
+        <Prop file="monitor.png" className="at-amy-screen" />
+        <Prop file="desk.png" className="at-lily" />
+        <Prop file="books.png" className="at-lily-books" />
+        <Prop file="desk.png" className="at-ken" />
+        <Prop file="monitor.png" className="at-ken-screen" />
+        <Prop file="desk.png" className="at-ivy" />
+        <Prop file="lounge-chair.png" className="at-ivy-chair" />
+        <Prop file="sofa.png" className="at-sofa" />
+        <Prop file="coffee-table.png" className="at-table" />
+        <Prop file="plant.png" className="at-plant-a" />
+        <Prop file="plant-small.png" className="at-plant-b" />
+        <Prop file="coffee.png" className="at-coffee" />
+        <img className="prop at-cooler" alt="" src={asset("sprites/cooler.png")} />
+        <img className="prop board at-board" alt="" src={asset("sprites/board.png")} />
+        <img className="prop at-rack" alt="" src={asset("sprites/rack.png")} />
       </div>
       {placed.map((person) => {
         const base = SPOTS[person.spot] ?? SPOTS.lounge;

@@ -121,38 +121,34 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     linear-gradient(#0b1830, #0b1830) 88% 100% / 8% 85% no-repeat;
 }
 .neon { position: absolute; right: 8px; top: 6px; width: 72px; height: auto; image-rendering: pixelated; }
-.rooms { position: absolute; left: 8px; right: 8px; top: 54px; bottom: 8px; }
-.cell {
+.floor {
   position: absolute;
-  width: 31%;
-  height: 30%;
-  border: 3px solid #1a1424;
-  border-radius: 8px;
+  left: 8px;
+  right: 8px;
+  top: 54px;
+  bottom: 8px;
+  border-radius: 14px;
+  border: 3px solid #3a2616;
+  background:
+    repeating-linear-gradient(90deg, rgba(90, 48, 20, 0.18) 0 14px, rgba(0, 0, 0, 0.05) 14px 16px),
+    linear-gradient(#c4894a, #a56b32);
   overflow: hidden;
 }
-.cell.gm { left: 0; top: 0; }
-.cell.lead { left: 34.5%; top: 0; }
-.cell.kitchen { right: 0; top: 0; }
-.cell.amy { left: 0; top: 34%; }
-.cell.lily { left: 34.5%; top: 34%; }
-.cell.ken { right: 0; top: 34%; }
-.cell.ivy { left: 0; top: 68%; }
-.cell.lounge { left: 34.5%; top: 68%; }
-.cell.servers { right: 0; top: 68%; }
-.carpet-brown { background: #5a3b24; }
-.carpet-green { background: #1f4a38; }
-.carpet-navy { background: #24324a; }
-.carpet-purple { background: #4a2d66; }
-.carpet-teal { background: #1c4a4e; }
-.carpet-maroon { background: #5a2436; }
-.carpet-amber { background: #5a3d22; }
-.carpet-olive { background: #3d4630; }
-.carpet-ink { background: #1c2438; }
+.zone {
+  position: absolute;
+  border-radius: 18px;
+  pointer-events: none;
+}
+.zone-gm { left: 2%; top: 6%; width: 26%; height: 36%; background: rgba(90, 52, 28, 0.55); }
+.zone-lead { left: 30%; top: 8%; width: 22%; height: 32%; background: rgba(36, 90, 62, 0.45); }
+.zone-amy { left: 3%; top: 50%; width: 18%; height: 24%; background: rgba(90, 40, 120, 0.45); }
+.zone-lily { left: 24%; top: 52%; width: 18%; height: 24%; background: rgba(20, 90, 96, 0.4); }
+.zone-ken { left: 46%; top: 50%; width: 18%; height: 24%; background: rgba(110, 36, 58, 0.4); }
+.zone-ivy { left: 68%; top: 46%; width: 18%; height: 24%; background: rgba(120, 78, 28, 0.4); }
+.zone-lounge { left: 16%; top: 76%; width: 36%; height: 20%; background: rgba(70, 82, 48, 0.35); }
 .plate {
   position: absolute;
   z-index: 2;
-  left: 4px;
-  top: 4px;
   background: #14101c;
   color: #f4efe4;
   font-size: 11px;
@@ -160,20 +156,39 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   padding: 1px 6px;
   border-radius: 4px;
 }
+.plate-gm { left: 4%; top: 8%; }
+.plate-lead { left: 32%; top: 10%; }
 .prop {
   position: absolute;
-  bottom: 4px;
-  height: 42px;
+  height: 40px;
   width: auto;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   pointer-events: none;
 }
-.cell .prop:nth-of-type(1) { left: 8px; }
-.cell .prop:nth-of-type(2) { left: 42%; }
-.cell .prop:nth-of-type(3) { right: 6px; left: auto; }
-.prop.tiny { height: 28px; }
-.prop.board { height: 28px; left: 8px; bottom: auto; top: 22px; }
+.prop.big { height: 58px; }
+.prop.board { height: 30px; }
+.at-gm { left: 6%; top: 16%; }
+.at-gm-chair { left: 16%; top: 22%; }
+.at-gm-lamp { left: 22%; top: 8%; height: 36px; }
+.at-lead { left: 34%; top: 16%; }
+.at-lead-books { left: 46%; top: 10%; height: 48px; }
+.at-amy { left: 6%; top: 54%; }
+.at-amy-screen { left: 12%; top: 50%; height: 32px; }
+.at-lily { left: 28%; top: 58%; }
+.at-lily-books { left: 36%; top: 54%; height: 28px; }
+.at-ken { left: 50%; top: 56%; }
+.at-ken-screen { left: 56%; top: 52%; height: 32px; }
+.at-ivy { left: 72%; top: 52%; }
+.at-ivy-chair { left: 80%; top: 48%; height: 36px; }
+.at-sofa { left: 18%; top: 78%; height: 44px; }
+.at-table { left: 32%; top: 82%; height: 28px; }
+.at-plant-a { left: 64%; top: 18%; }
+.at-plant-b { left: 2%; top: 78%; height: 28px; }
+.at-coffee { right: 8%; top: 14%; left: auto; }
+.at-cooler { right: 3%; top: 18%; left: auto; height: 32px; }
+.at-board { left: 60%; top: 30%; }
+.at-rack { right: 3%; bottom: 8%; left: auto; top: auto; height: 36px; }
 .actor {
   position: absolute;
   width: 54px;

@@ -159,7 +159,7 @@ export function CindyOffice() {
       await backend.updateTask(task.task_id, { status });
       if (status === "done") {
         const name = findAgent(task.agent_slug).display_name;
-        await backend.addEvent({ day: task.day, kind: "report", text: `${name} 到主管室向 Maggie 回報「${task.title}」` });
+        await backend.addEvent({ day: task.day, kind: "report", text: `${name} 走到主管座位向 Maggie 回報「${task.title}」` });
         const home = task.agent_slug === "maggie" ? "maggieOffice" : task.agent_slug;
         play([{ slug: task.agent_slug, spot: home, bubble: "+1" }], 700);
         window.setTimeout(() => {
@@ -168,7 +168,7 @@ export function CindyOffice() {
         window.setTimeout(() => {
           if (!backend) return;
           backend
-            .addEvent({ day: task.day, kind: "gm", text: `Maggie 到總經理室回報「${task.title}」` })
+            .addEvent({ day: task.day, kind: "gm", text: `Maggie 走到總經理座位回報「${task.title}」` })
             .then(() => refresh(backend))
             .catch(() => undefined);
           play(
