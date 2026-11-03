@@ -92,6 +92,16 @@ export const zhTW: Record<string, string> = {
   'builtin.assistant.role': '通用工作助理',
   'builtin.data_engineer': '資料工程師',
   'builtin.data_engineer.role': '資料管理與上傳',
+  'builtin.amy': 'Amy',
+  'builtin.amy.role': '信件回覆、自媒體經紀人',
+  'builtin.lily': 'Lily',
+  'builtin.lily.role': '研究最新 AI 科技與應用、文章寫手',
+  'builtin.ken': 'Ken',
+  'builtin.ken.role': '資工、資安工具人',
+  'builtin.ivy': 'Ivy',
+  'builtin.ivy.role': '美編設計師',
+  'builtin.maggie': 'Maggie',
+  'builtin.maggie.role': '專案管理師',
 
   // ========== 通用 ==========
   'common.close': '關閉',

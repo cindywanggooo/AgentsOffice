@@ -92,6 +92,16 @@ export const ja: Record<string, string> = {
   'builtin.assistant.role': '汎用ワークアシスタント',
   'builtin.data_engineer': 'データエンジニア',
   'builtin.data_engineer.role': 'データ管理・アップロード',
+  'builtin.amy': 'Amy',
+  'builtin.amy.role': 'メールとSNS',
+  'builtin.lily': 'Lily',
+  'builtin.lily.role': 'AI調査と記事',
+  'builtin.ken': 'Ken',
+  'builtin.ken.role': '開発とセキュリティ',
+  'builtin.ivy': 'Ivy',
+  'builtin.ivy.role': 'ビジュアルデザイン',
+  'builtin.maggie': 'Maggie',
+  'builtin.maggie.role': 'プロジェクト管理',
 
   // ========== 共通 ==========
   'common.close': '閉じる',

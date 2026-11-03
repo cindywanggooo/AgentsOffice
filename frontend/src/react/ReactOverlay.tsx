@@ -167,6 +167,9 @@ export const ReactOverlay: React.FC = () => {
             </button>
           )}
           <LanguageSwitcher />
+          <a href="./index.html" title="辛蒂的 AI 同事辦公室" style={{ color: '#f6c445', textDecoration: 'none' }}>
+            Cindy
+          </a>
         </div>
       )}
 

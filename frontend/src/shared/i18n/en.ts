@@ -92,6 +92,16 @@ export const en: Record<string, string> = {
   'builtin.assistant.role': 'General-purpose helper',
   'builtin.data_engineer': 'Data Engineer',
   'builtin.data_engineer.role': 'Data management & upload',
+  'builtin.amy': 'Amy',
+  'builtin.amy.role': 'Email and social media',
+  'builtin.lily': 'Lily',
+  'builtin.lily.role': 'AI research and writing',
+  'builtin.ken': 'Ken',
+  'builtin.ken.role': 'Engineering and security',
+  'builtin.ivy': 'Ivy',
+  'builtin.ivy.role': 'Visual design',
+  'builtin.maggie': 'Maggie',
+  'builtin.maggie.role': 'Project management',
 
   // ========== Common ==========
   'common.close': 'Close',

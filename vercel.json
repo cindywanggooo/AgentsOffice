@@ -1,0 +1,6 @@
+{
+  "framework": null,
+  "installCommand": "npm ci --prefix frontend",
+  "buildCommand": "npm run build --prefix frontend",
+  "outputDirectory": "app/static/office"
+}
