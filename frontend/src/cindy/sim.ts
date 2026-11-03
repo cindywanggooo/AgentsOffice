@@ -64,8 +64,6 @@ export function spotFor(slug: string, tasks: OfficeTask[], day: string, walk?: s
   if (presence === "working" || presence === "thinking") {
     return slug === "maggie" ? "maggieOffice" : slug;
   }
-  if (slug === "ken") return "kitchen";
-  if (slug === "ivy") return "lounge";
   return "lounge";
 }
 

@@ -117,18 +117,21 @@ export function CindyOffice() {
     const partner = meetingWith(text, worker);
     try {
       await backend.createTask({ agent_slug: worker, title: text, day, via_maggie: via });
+      const desk = worker === "maggie" ? "maggieOffice" : worker;
       if (via && worker !== "maggie") {
         await backend.addEvent({ day, kind: "dispatch", text: `Maggie 把「${text}」交給 ${name}` });
-        play([{ slug: "maggie", spot: worker, bubble: `交給${name}` }]);
-        window.setTimeout(() => {
-          const steps = [{ slug: worker, spot: partner ? "meet" : worker, bubble: partner ? "一起看" : "我來做" }];
-          if (partner && partner !== "meet") steps.push({ slug: partner, spot: "meet", bubble: "過來一下" });
-          play(steps, 2000);
-        }, 1400);
       } else {
         await backend.addEvent({ day, kind: "direct", text: `總經理直接把「${text}」交給 ${name}` });
-        play([{ slug: worker, spot: worker === "maggie" ? "maggieOffice" : partner ? "meet" : worker, bubble: "收到" }]);
       }
+      play([
+        { slug: worker, spot: "whiteboard", bubble: "領任務" },
+        ...(via && worker !== "maggie" ? [{ slug: "maggie", spot: "whiteboard", bubble: "交給你" }] : []),
+      ]);
+      window.setTimeout(() => {
+        const steps = [{ slug: worker, spot: partner ? "meet" : desk, bubble: partner ? "一起看" : "開工" }];
+        if (partner && partner !== "meet") steps.push({ slug: partner, spot: "meet", bubble: "過來一下" });
+        play(steps, 2000);
+      }, 1300);
       if (partner && partner !== "meet") {
         await backend.addEvent({
           day,
@@ -157,7 +160,11 @@ export function CindyOffice() {
       if (status === "done") {
         const name = findAgent(task.agent_slug).display_name;
         await backend.addEvent({ day: task.day, kind: "report", text: `${name} 到主管室向 Maggie 回報「${task.title}」` });
-        play([{ slug: task.agent_slug, spot: "maggieOffice", bubble: "回報主管" }]);
+        const home = task.agent_slug === "maggie" ? "maggieOffice" : task.agent_slug;
+        play([{ slug: task.agent_slug, spot: home, bubble: "+1" }], 700);
+        window.setTimeout(() => {
+          play([{ slug: task.agent_slug, spot: "maggieOffice", bubble: "回報主管" }]);
+        }, 700);
         window.setTimeout(() => {
           if (!backend) return;
           backend

@@ -7,6 +7,8 @@
 
 ## 辛蒂的 AI 同事辦公室
 
+家具圖來自 [Kenney Furniture Kit](https://kenney.nl/assets/furniture-kit)（CC0），縮小成像素比例後放進房間。角色、辦公室貓、霓虹燈、白板和機櫃是這個專案自己畫的像素圖。
+
 深色等距辦公室：Cindy 在玻璃總經理室，Maggie 是主管。任務預設交給 Maggie 分派；同事完成後會走到主管室，再由 Maggie 送到「給總經理的回報」。人物走動在沒接上模型時標成模擬。狀態（待命 / 進行中 / 完成）、每日紀錄和 25:00 番茄鐘都還在。手機上場景會縮小，側欄變成底部頁籤。原本的像素辦公室在 `pixel.html`。
 
 ![桌面版](docs/cindy-office-desktop.png)
