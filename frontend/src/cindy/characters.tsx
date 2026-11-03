@@ -4,8 +4,18 @@ interface FaceProps {
 
 export function AgentFace({ slug }: FaceProps) {
   const shirt =
-    slug === "amy" ? "#ff8fbe" : slug === "lily" ? "#b89bff" : slug === "ken" ? "#3d6f99" : slug === "ivy" ? "#f0b15a" : "#67c07a";
-  const hair = slug === "lily" || slug === "ivy" ? "#3a2418" : slug === "maggie" ? "#6b3a28" : "#2a211c";
+    slug === "cindy"
+      ? "#ffd56a"
+      : slug === "amy"
+        ? "#ff4f9a"
+        : slug === "lily"
+          ? "#b388ff"
+          : slug === "ken"
+            ? "#3ee0ff"
+            : slug === "ivy"
+              ? "#ffb020"
+              : "#3dff9a";
+  const hair = slug === "cindy" ? "#3a2418" : slug === "lily" || slug === "ivy" ? "#3a2418" : slug === "maggie" ? "#6b3a28" : "#2a211c";
   return (
     <svg className="face" viewBox="0 0 72 80" aria-hidden="true">
       <ellipse cx="36" cy="74" rx="18" ry="6" fill="rgba(80,40,20,0.15)" />
@@ -38,6 +48,7 @@ export function AgentFace({ slug }: FaceProps) {
       {slug === "ken" && <path d="M50 54h10l-2 8h-6z" fill="#d7ecff" stroke="#4a3426" strokeWidth="1.5" />}
       {slug === "ivy" && <rect x="48" y="52" width="12" height="9" rx="2" fill="#fff" stroke="#4a3426" strokeWidth="1.5" />}
       {slug === "maggie" && <rect x="46" y="50" width="12" height="14" rx="2" fill="#fffaf2" stroke="#4a3426" strokeWidth="1.5" />}
+      {slug === "cindy" && <path d="M28 16h16l-2 6H30z" fill="#ffd56a" stroke="#4a3426" strokeWidth="1.4" />}
     </svg>
   );
 }

@@ -24,8 +24,19 @@ export interface OfficeTask {
   status: TaskStatus;
   result: string;
   backend: string;
+  via_maggie: boolean;
+  needs_you: boolean;
+  acked: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface OfficeEvent {
+  event_id: string;
+  day: string;
+  text: string;
+  kind: string;
+  created_at: string;
 }
 
 export interface ChatMessage {
@@ -57,6 +68,13 @@ export interface CreateTaskInput {
   agent_slug: string;
   title: string;
   day: string;
+  via_maggie?: boolean;
+}
+
+export interface TaskPatch {
+  status?: TaskStatus;
+  needs_you?: boolean;
+  acked?: boolean;
 }
 
 export interface SendChatInput {

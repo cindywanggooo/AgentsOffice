@@ -56,10 +56,19 @@ class TaskCreate(BaseModel):
     agent_slug: str
     title: str = Field(min_length=1, max_length=500)
     day: Optional[str] = None
+    via_maggie: bool = False
 
 
 class TaskPatch(BaseModel):
-    status: str
+    status: Optional[str] = None
+    needs_you: Optional[bool] = None
+    acked: Optional[bool] = None
+
+
+class EventCreate(BaseModel):
+    day: Optional[str] = None
+    text: str = Field(min_length=1, max_length=300)
+    kind: str = "info"
 
 
 class ChatCreate(BaseModel):
@@ -148,6 +157,7 @@ async def create_task(payload: TaskCreate) -> ApiEnvelope:
             "status": "done" if outcome.completed else "idle",
             "result": outcome.reply if outcome.completed else "",
             "backend": outcome.backend,
+            "via_maggie": payload.via_maggie,
         }
     )
     user_message["task_id"] = task["task_id"]
@@ -166,9 +176,23 @@ async def create_task(payload: TaskCreate) -> ApiEnvelope:
 
 @router.patch("/tasks/{task_id}")
 def patch_task(task_id: str, payload: TaskPatch) -> ApiEnvelope:
-    if payload.status not in TASK_STATUSES:
+    if payload.status is None and payload.needs_you is None and payload.acked is None:
+        raise HTTPException(status_code=400, detail="沒有要更新的內容")
+    if payload.status is not None and payload.status not in TASK_STATUSES:
         raise HTTPException(status_code=400, detail="狀態須為 idle、doing 或 done")
-    task = get_store().update_task(task_id, status=payload.status)
+    fields: Dict[str, Any] = {}
+    if payload.status is not None:
+        fields["status"] = payload.status
+        if payload.status == "done" and payload.needs_you is None:
+            fields["needs_you"] = True
+            fields["acked"] = False
+        elif payload.status in ("idle", "doing") and payload.needs_you is None:
+            fields["needs_you"] = False
+    if payload.needs_you is not None:
+        fields["needs_you"] = payload.needs_you
+    if payload.acked is not None:
+        fields["acked"] = payload.acked
+    task = get_store().update_task(task_id, **fields)
     if task is None:
         raise HTTPException(status_code=404, detail="找不到這項任務")
     return _envelope({"task": task})
@@ -211,6 +235,7 @@ async def chat(payload: ChatCreate) -> ApiEnvelope:
                 "status": "done" if outcome.completed else "idle",
                 "result": outcome.reply if outcome.completed else "",
                 "backend": outcome.backend,
+                "via_maggie": True,
             }
         )
         user_message["task_id"] = task["task_id"]
@@ -225,3 +250,19 @@ async def chat(payload: ChatCreate) -> ApiEnvelope:
         }
     )
     return _envelope({"task": task, "messages": [user_message, reply]})
+
+
+@router.get("/events")
+def events(day: Optional[str] = None) -> ApiEnvelope:
+    if day is not None:
+        day = _check_day(day)
+    return _envelope({"events": get_store().list_events(day)})
+
+
+@router.post("/events")
+def create_event(payload: EventCreate) -> ApiEnvelope:
+    text = payload.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="請輸入動態內容")
+    event = get_store().add_event({"day": _check_day(payload.day), "text": text, "kind": payload.kind[:40]})
+    return _envelope({"event": event})

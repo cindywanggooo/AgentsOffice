@@ -15,9 +15,10 @@ import type {
   CreateTaskInput,
   HealthInfo,
   OfficeAgent,
+  OfficeEvent,
   OfficeTask,
   SendChatInput,
-  TaskStatus,
+  TaskPatch,
 } from "./types";
 
 export interface OfficeBackend {
@@ -25,8 +26,10 @@ export interface OfficeBackend {
   listAgents(): Promise<OfficeAgent[]>;
   listTasks(day?: string): Promise<OfficeTask[]>;
   listMessages(agentSlug?: string): Promise<ChatMessage[]>;
+  listEvents(day?: string): Promise<OfficeEvent[]>;
+  addEvent(input: { day: string; text: string; kind?: string }): Promise<void>;
   createTask(input: CreateTaskInput): Promise<OfficeTask>;
-  updateTask(taskId: string, status: TaskStatus): Promise<OfficeTask>;
+  updateTask(taskId: string, patch: TaskPatch): Promise<OfficeTask>;
   deleteTask(taskId: string): Promise<void>;
   sendChat(input: SendChatInput): Promise<void>;
 }
@@ -36,10 +39,20 @@ const STORAGE_KEY = "cindy-office-v1";
 interface Bucket {
   tasks: OfficeTask[];
   messages: ChatMessage[];
+  events: OfficeEvent[];
 }
 
 function emptyBucket(): Bucket {
-  return { tasks: [], messages: [] };
+  return { tasks: [], messages: [], events: [] };
+}
+
+function normalizeTask(task: OfficeTask): OfficeTask {
+  return {
+    ...task,
+    via_maggie: Boolean(task.via_maggie),
+    needs_you: Boolean(task.needs_you),
+    acked: Boolean(task.acked),
+  };
 }
 
 function nid(prefix: string): string {
@@ -58,6 +71,8 @@ function loadBucket(): Bucket {
     if (!parsed || !Array.isArray(parsed.tasks) || !Array.isArray(parsed.messages)) {
       return emptyBucket();
     }
+    parsed.events = Array.isArray(parsed.events) ? parsed.events : [];
+    parsed.tasks = parsed.tasks.map((task) => normalizeTask(task));
     return parsed;
   } catch {
     return emptyBucket();
@@ -67,6 +82,7 @@ function loadBucket(): Bucket {
 function saveBucket(bucket: Bucket): void {
   bucket.tasks = bucket.tasks.slice(-1000);
   bucket.messages = bucket.messages.slice(-400);
+  bucket.events = bucket.events.slice(-400);
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bucket));
   } catch {
@@ -91,6 +107,24 @@ export class BrowserOfficeBackend implements OfficeBackend {
       .sort((a, b) => a.created_at.localeCompare(b.created_at));
   }
 
+  async listEvents(day?: string): Promise<OfficeEvent[]> {
+    return loadBucket()
+      .events.filter((event) => !day || event.day === day)
+      .sort((a, b) => a.created_at.localeCompare(b.created_at));
+  }
+
+  async addEvent(input: { day: string; text: string; kind?: string }): Promise<void> {
+    const bucket = loadBucket();
+    bucket.events.push({
+      event_id: nid("evt"),
+      day: input.day,
+      text: input.text.trim(),
+      kind: input.kind || "info",
+      created_at: nowIso(),
+    });
+    saveBucket(bucket);
+  }
+
   async listMessages(agentSlug?: string): Promise<ChatMessage[]> {
     return loadBucket()
       .messages.filter((message) => !agentSlug || message.agent_slug === agentSlug)
@@ -107,6 +141,9 @@ export class BrowserOfficeBackend implements OfficeBackend {
       status: "idle",
       result: "",
       backend: "browser",
+      via_maggie: Boolean(input.via_maggie),
+      needs_you: false,
+      acked: false,
       created_at: nowIso(),
       updated_at: nowIso(),
     };
@@ -137,11 +174,21 @@ export class BrowserOfficeBackend implements OfficeBackend {
     return task;
   }
 
-  async updateTask(taskId: string, status: TaskStatus): Promise<OfficeTask> {
+  async updateTask(taskId: string, patch: TaskPatch): Promise<OfficeTask> {
     const bucket = loadBucket();
     const task = bucket.tasks.find((item) => item.task_id === taskId);
     if (!task) throw new Error("找不到這項任務");
-    task.status = status;
+    if (patch.status) {
+      task.status = patch.status;
+      if (patch.status === "done" && patch.needs_you === undefined) {
+        task.needs_you = true;
+        task.acked = false;
+      } else if (patch.status !== "done" && patch.needs_you === undefined) {
+        task.needs_you = false;
+      }
+    }
+    if (patch.needs_you !== undefined) task.needs_you = patch.needs_you;
+    if (patch.acked !== undefined) task.acked = patch.acked;
     task.updated_at = nowIso();
     saveBucket(bucket);
     return task;
@@ -167,6 +214,9 @@ export class BrowserOfficeBackend implements OfficeBackend {
         status: "idle",
         result: "",
         backend: "browser",
+        via_maggie: true,
+        needs_you: false,
+        acked: false,
         created_at: nowIso(),
         updated_at: nowIso(),
       };
@@ -234,7 +284,23 @@ export class ServerOfficeBackend implements OfficeBackend {
   async listTasks(day?: string): Promise<OfficeTask[]> {
     const query = day ? `?day=${encodeURIComponent(day)}` : "";
     const data = await readData<{ tasks: OfficeTask[] }>(await fetch(this.url(`/tasks${query}`)));
-    return data.tasks;
+    return data.tasks.map((task) => normalizeTask(task));
+  }
+
+  async listEvents(day?: string): Promise<OfficeEvent[]> {
+    const query = day ? `?day=${encodeURIComponent(day)}` : "";
+    const data = await readData<{ events: OfficeEvent[] }>(await fetch(this.url(`/events${query}`)));
+    return data.events;
+  }
+
+  async addEvent(input: { day: string; text: string; kind?: string }): Promise<void> {
+    await readData(
+      await fetch(this.url("/events"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      }),
+    );
   }
 
   async listMessages(agentSlug?: string): Promise<ChatMessage[]> {
@@ -251,18 +317,18 @@ export class ServerOfficeBackend implements OfficeBackend {
         body: JSON.stringify(input),
       }),
     );
-    return data.task;
+    return normalizeTask(data.task);
   }
 
-  async updateTask(taskId: string, status: TaskStatus): Promise<OfficeTask> {
+  async updateTask(taskId: string, patch: TaskPatch): Promise<OfficeTask> {
     const data = await readData<{ task: OfficeTask }>(
       await fetch(this.url(`/tasks/${encodeURIComponent(taskId)}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify(patch),
       }),
     );
-    return data.task;
+    return normalizeTask(data.task);
   }
 
   async deleteTask(taskId: string): Promise<void> {

@@ -101,7 +101,7 @@ export const zhTW: Record<string, string> = {
   'builtin.ivy': 'Ivy',
   'builtin.ivy.role': '美編設計師',
   'builtin.maggie': 'Maggie',
-  'builtin.maggie.role': '專案管理師',
+  'builtin.maggie.role': '主管',
 
   // ========== 通用 ==========
   'common.close': '關閉',

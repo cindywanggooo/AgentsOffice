@@ -118,8 +118,38 @@ def test_adapter_stays_local_without_api_keys() -> None:
     local = asyncio.run(LocalEchoAdapter().handle(agent, "排里程碑", []))
     assert local.completed is False
     assert local.backend == "local"
-    assert "進度" in local.reply
+    assert "主管" in local.reply
 
     runtime = asyncio.run(OfficeRuntimeAdapter().handle(agent, "排里程碑", []))
     assert runtime.backend == "local"
     assert runtime.completed is False
+
+
+def test_maggie_dispatch_report_and_activity_persist(cindy_file) -> None:
+    created = client.post(
+        "/api/v1/office/cindy/tasks",
+        json={"agent_slug": "amy", "title": "回覆合作信", "day": "2026-11-03", "via_maggie": True},
+    )
+    assert created.status_code == 200
+    task = created.json()["data"]["task"]
+    assert task["via_maggie"] is True
+    assert task["needs_you"] is False
+
+    done = client.patch(f"/api/v1/office/cindy/tasks/{task['task_id']}", json={"status": "done"})
+    assert done.json()["data"]["task"]["needs_you"] is True
+
+    acked = client.patch(
+        f"/api/v1/office/cindy/tasks/{task['task_id']}",
+        json={"acked": True, "needs_you": False},
+    )
+    assert acked.json()["data"]["task"]["acked"] is True
+    assert acked.json()["data"]["task"]["status"] == "done"
+
+    noted = client.post(
+        "/api/v1/office/cindy/events",
+        json={"day": "2026-11-03", "text": "Maggie 把「回覆合作信」交給 Amy", "kind": "dispatch"},
+    )
+    assert noted.status_code == 200
+    listed = client.get("/api/v1/office/cindy/events", params={"day": "2026-11-03"})
+    assert listed.json()["data"]["events"][0]["text"].endswith("Amy")
+    assert CindyStore(cindy_file).list_events(day="2026-11-03")[0]["kind"] == "dispatch"

@@ -79,6 +79,9 @@ class CindyStore:
             "status": fields.get("status", "idle"),
             "result": fields.get("result") or "",
             "backend": fields.get("backend") or "local",
+            "via_maggie": bool(fields.get("via_maggie")),
+            "needs_you": bool(fields.get("needs_you")),
+            "acked": bool(fields.get("acked")),
             "created_at": now_iso(),
             "updated_at": now_iso(),
         }
@@ -102,6 +105,12 @@ class CindyStore:
                     task["result"] = fields["result"]
                 if "backend" in fields and fields["backend"] is not None:
                     task["backend"] = fields["backend"]
+                if "via_maggie" in fields and fields["via_maggie"] is not None:
+                    task["via_maggie"] = bool(fields["via_maggie"])
+                if "needs_you" in fields and fields["needs_you"] is not None:
+                    task["needs_you"] = bool(fields["needs_you"])
+                if "acked" in fields and fields["acked"] is not None:
+                    task["acked"] = bool(fields["acked"])
                 task["updated_at"] = now_iso()
                 return task
             return None
@@ -136,6 +145,31 @@ class CindyStore:
 
         return self._mutate(mutate)
 
+    def list_events(self, day: Optional[str] = None) -> List[Dict[str, Any]]:
+        data = self._read()
+        events = data.get("events", [])
+        if day:
+            events = [event for event in events if event.get("day") == day]
+        return sorted(events, key=lambda event: event.get("created_at", ""))
+
+    def add_event(self, fields: Dict[str, Any]) -> Dict[str, Any]:
+        event = {
+            "event_id": make_id("evt"),
+            "day": fields["day"],
+            "text": fields["text"],
+            "kind": fields.get("kind") or "info",
+            "created_at": now_iso(),
+        }
+
+        def mutate(data: Dict[str, Any]) -> Dict[str, Any]:
+            data.setdefault("events", [])
+            data["events"].append(event)
+            if len(data["events"]) > 400:
+                data["events"] = data["events"][-400:]
+            return event
+
+        return self._mutate(mutate)
+
     def _mutate(self, fn: Callable[[Dict[str, Any]], Any]) -> Any:
         with self._lock:
             data = self._load()
@@ -149,16 +183,17 @@ class CindyStore:
 
     def _load(self) -> Dict[str, Any]:
         if not self.path.exists():
-            return {"tasks": [], "messages": []}
+            return {"tasks": [], "messages": [], "events": []}
         try:
             raw = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             logger.warning("無法讀取 %s，改用空白進度", self.path)
-            return {"tasks": [], "messages": []}
+            return {"tasks": [], "messages": [], "events": []}
         if not isinstance(raw, dict):
-            return {"tasks": [], "messages": []}
+            return {"tasks": [], "messages": [], "events": []}
         raw.setdefault("tasks", [])
         raw.setdefault("messages", [])
+        raw.setdefault("events", [])
         return raw
 
     def _save(self, data: Dict[str, Any]) -> None:
